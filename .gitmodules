@@ -1,3 +1,6 @@
 [submodule "luatool"]
 	path = luatool
 	url = git@github.com:4refr0nt/luatool.git
+[submodule "esptool"]
+	path = esptool
+	url = git@github.com:espressif/esptool.git
