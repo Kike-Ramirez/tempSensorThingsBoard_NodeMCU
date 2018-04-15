@@ -1,0 +1,3 @@
+[submodule "luatool"]
+	path = luatool
+	url = git@github.com:4refr0nt/luatool.git
