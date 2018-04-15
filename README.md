@@ -30,3 +30,26 @@ cp *.lua ../luatools/luatools
 sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src config.lua --dest config.lua -v
 sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src dht11.lua --dest dht11.lua -v
 sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src init.lua --dest init.lua -v
+```)
+
+## Thingsboard.io platform configuratioin
+
+![Thingsboard.io dashboard](/images/dashboard.png)
+
+
+## Hardware
+
+### NodeMCU
+![NodeMCU Pinout](/images/nodemcu-pinout.jpg)
+
+### DHT22 (Temperature - Humidity Sensor)
+![DHT22 Pinout](/images/DHT22.png)
+
+### Schematics
+![NodeMCU+DHT22 Schematics](/images/nodemcu_dht22.png)
+
+### 3D Printing
+You can download all files in **[Thingiverse]**(https://www.thingiverse.com/thing:2330811).
+
+![Box closure](/images/box1.jpg)
+![Box closure](/images/box2.jpg)
