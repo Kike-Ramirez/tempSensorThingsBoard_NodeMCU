@@ -34,6 +34,8 @@ sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src init.lua --dest init.lua -
 
 ## Thingsboard.io platform configuratioin
 
+You can check details of a demo **dashboard** using 2 nodeMCU devices measuring temperature and humidity in two different rooms of a house **[HERE](http://demo.thingsboard.io/dashboards/6e997810-3f82-11e8-82d4-c3b186e30863?publicId=d51d55a0-ff9c-11e7-abe9-1d8d2edf4f93)**.
+
 ![Thingsboard.io dashboard](/images/dashboard.png)
 
 
