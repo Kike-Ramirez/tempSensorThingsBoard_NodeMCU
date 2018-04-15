@@ -4,3 +4,6 @@
 [submodule "esptool"]
 	path = esptool
 	url = git@github.com:espressif/esptool.git
+[submodule "nodemcu-firmware"]
+	path = nodemcu-firmware
+	url = git@github.com:nodemcu/nodemcu-firmware.git
