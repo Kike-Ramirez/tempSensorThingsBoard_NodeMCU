@@ -3,6 +3,13 @@
 A firmware for NodeMCU device connected to a thingsboard server (raspberry PI 3) both running in a local network.
 
 ## Bill of Materials
+![Bill of Materials](images/bill_of_materials.jpg)
+Hardware Required:
+1. NodeMCU v1 Board
+2. DHT22 Sensor
+3. LiPO Battery 2000mAh
+4. LiPO Charger module
+5. DuPont Female connectors
 
 ## NodeMCU Firmware update
 
