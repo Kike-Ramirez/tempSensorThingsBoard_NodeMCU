@@ -1,5 +1,5 @@
 # tempSensorThingsBoard_NodeMCU
-![head](images/nodemcu_dht22.png)
+![head](images/NodeMCU_DHT22_Thingsboard_BREADBOARD.png)
 A firmware for NodeMCU device connected to a thingsboard server (raspberry PI 3) both running in a local network.
 
 ## NodeMCU Firmware update
@@ -48,7 +48,7 @@ You can check details of a demo **dashboard** using 2 nodeMCU devices measuring 
 ![DHT22 Pinout](/images/DHT22.png)
 
 ### Schematics
-![NodeMCU+DHT22 Schematics](/images/nodemcu_dht22.png)
+![NodeMCU+DHT22 Schematics](/images/NodeMCU_DHT22_Thingsboard_BREADBOARD.png)
 
 ### 3D Printing
 You can download all files in **[Thingiverse]**(https://www.thingiverse.com/thing:2330811).
