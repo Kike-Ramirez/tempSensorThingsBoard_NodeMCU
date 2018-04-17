@@ -1,6 +1,8 @@
 # tempSensorThingsBoard_NodeMCU
-![head](images/NodeMCU_DHT22_Thingsboard_BREADBOARD.png)
+![head](images/project_main.jpg)
 A firmware for NodeMCU device connected to a thingsboard server (raspberry PI 3) both running in a local network.
+
+## Bill of Materials
 
 ## NodeMCU Firmware update
 
