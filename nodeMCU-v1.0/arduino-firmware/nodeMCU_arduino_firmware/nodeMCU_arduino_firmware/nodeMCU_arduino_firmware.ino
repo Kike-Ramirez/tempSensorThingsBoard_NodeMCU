@@ -26,13 +26,20 @@
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
+#include <CapacitiveSensor.h>
+
 
 #define DHTPIN            D6         // Pin which is connected to the DHT sensor.
 #define OLED_RESET LED_BUILTIN
 #define DHTTYPE           DHT22     // DHT 22 (AM2302)
+#define CAP_TX            D8
+#define CAP_RX            D7
 
 
 DHT_Unified dht(DHTPIN, DHTTYPE);
+
+CapacitiveSensor   cs = CapacitiveSensor(CAP_TX,CAP_RX);        // 1Mohm resistor between pins 4 & 2, pin 2 is sensor pin
+
 
 uint32_t timerMeasure, timeMeasure;
 float temperature, humidity;
@@ -44,6 +51,9 @@ Adafruit_SSD1306 display(OLED_RESET);
 void setup()   {                
   Serial.begin(9600);
   Serial.println("Working");
+
+  cs.set_CS_AutocaL_Millis(0xFFFFFFFF);     // turn off autocalibrate on channel 1 - TOUCH SENSOR
+
 
   dht.begin();
   Serial.println("DHTxx Unified Sensor Example");
@@ -136,5 +146,19 @@ void loop() {
     Serial.println("Measure done!");
 
   }
-  
+
+    long start = millis();
+
+    long touch_measure =  cs.capacitiveSensor(30);
+    Serial.print("Touch measure: ");
+    Serial.println(touch_measure);
+    Serial.print("Elapsed time: ");
+    Serial.print(millis() - start);        // check on performance in milliseconds
+    Serial.println(" ms.");
+    Serial.println();
+
+    delay(10);
+
+
+
 }
