@@ -1,6 +1,6 @@
-# tempSensorThingsBoard_NodeMCU
+# tempSensor_Thinger_NodeMCU
 ![head](images/project_main.jpg)
-A firmware for NodeMCU device connected to a thingsboard server (raspberry PI 3) both running in a local network.
+A firmware for NodeMCU device connected to a thinger.io server (raspberry PI 3) both running in a local network.
 
 ## Bill of Materials
 ![Bill of Materials](images/bill_of_materials.jpg)
@@ -41,11 +41,11 @@ sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src dht11.lua --dest dht11.lua
 sudo ./luatool.py --port /dev/ttyUSBX -b 115200 --src init.lua --dest init.lua -v
 ```
 
-## Thingsboard.io platform configuratioin
+## thinger.io platform configuration
 
-You can check details of a demo **dashboard** using 2 nodeMCU devices measuring temperature and humidity in two different rooms of a house **[HERE](http://demo.thingsboard.io/dashboards/6e997810-3f82-11e8-82d4-c3b186e30863?publicId=d51d55a0-ff9c-11e7-abe9-1d8d2edf4f93)**.
+You can check details of a demo **dashboard** using 2 nodeMCU devices measuring temperature and humidity in two different rooms of a house **[HERE]()**.
 
-![Thingsboard.io dashboard](/images/dashboard.png)
+![thinger.io dashboard](/images/dashboard.png)
 
 
 ## Hardware
