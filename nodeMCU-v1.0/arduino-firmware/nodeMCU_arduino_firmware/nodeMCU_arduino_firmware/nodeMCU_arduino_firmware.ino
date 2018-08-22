@@ -46,6 +46,9 @@ float temperature, humidity;
 
 Adafruit_SSD1306 display(OLED_RESET);
 
+boolean sleept = false;
+float timerSleep, timeSleep;
+
 
   
 void setup()   {                
@@ -85,6 +88,9 @@ void setup()   {
   timerMeasure = 1000.0;
   timeMeasure = millis();
 
+  timerSleep = 5000.0;
+  timeSleep = millis();
+  
   temperature = 0.0;
   humidity = 0.0;
 
@@ -157,7 +163,7 @@ void loop() {
     Serial.println(" ms.");
     Serial.println();
 
-    delay(10);
+    delay(200);
 
 
 
