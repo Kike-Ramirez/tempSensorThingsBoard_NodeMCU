@@ -27,6 +27,8 @@
 #include <DHT.h>
 #include <DHT_U.h>
 #include <CapacitiveSensor.h>
+#include <ESP8266WiFi.h>
+#include <ThingerESP8266.h>
 
 
 #define DHTPIN            D6         // Pin which is connected to the DHT sensor.
@@ -49,6 +51,14 @@ Adafruit_SSD1306 display(OLED_RESET);
 boolean sleept = false;
 float timerSleep, timeSleep;
 
+#define USERNAME "KikeRamirez"
+#define DEVICE_ID "NodeMCU"
+#define DEVICE_CREDENTIAL "YSqMCv9y%0Xo"
+
+#define SSID "CarmenLauraKike"
+#define SSID_PASSWORD "Carmen2016"
+
+ThingerESP8266 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
 
   
 void setup()   {                
@@ -106,7 +116,16 @@ void setup()   {
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
-  
+
+  thing.add_wifi(SSID, SSID_PASSWORD);
+
+  thing["temperature"] >> [](pson& out){
+        out = temperature;
+  };
+
+  thing["humidity"] >> [](pson& out){
+        out = humidity;
+  };  
 }
 
 
@@ -151,17 +170,20 @@ void loop() {
     display.display();
     Serial.println("Measure done!");
 
+    thing.handle();
+
+
   }
 
     long start = millis();
 
     long touch_measure =  cs.capacitiveSensor(30);
-    Serial.print("Touch measure: ");
-    Serial.println(touch_measure);
-    Serial.print("Elapsed time: ");
-    Serial.print(millis() - start);        // check on performance in milliseconds
-    Serial.println(" ms.");
-    Serial.println();
+//    Serial.print("Touch measure: ");
+//    Serial.println(touch_measure);
+//    Serial.print("Elapsed time: ");
+//    Serial.print(millis() - start);        // check on performance in milliseconds
+//    Serial.println(" ms.");
+//    Serial.println();
 
     delay(200);
 
