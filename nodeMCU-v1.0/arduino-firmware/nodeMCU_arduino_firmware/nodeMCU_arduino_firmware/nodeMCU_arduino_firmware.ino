@@ -54,8 +54,8 @@
 
 // THINGER.IO -----------> USER, PWD & DEVICE CREDENTIALS, TOKEN, ETC.
 #define USERNAME "KikeRamirez"
-#define DEVICE_ID "NodeMCU"
-#define DEVICE_CREDENTIAL "YSqMCv9y%0Xo"
+#define DEVICE_ID "Prototype_001"
+#define DEVICE_CREDENTIAL "LlypDOJX2uqc"
 
 // GENERAL PARAMETERS -----------> TIMINGS, FLAGS, DATA, ETC.
 #define TIMER_MEASURE 1000.0
@@ -98,23 +98,42 @@ void setup()   {
   thing["humidity"] >> [](pson& out){
         out = dht.readHumidity();
   };  
+
+  thing["status"] = [](){
+    get_status();
+  };
+
+  thing["updateDisplay"] = [](){
+    update_display();
+  };
+
+  thing["clearDisplay"] = [](){
+    display.clearDisplay();
+  };
+
+  // Print logs
+  if (VERBOSITY) Serial.println("Connected to Thinger.io!");
   
   // Initialize OLED Display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
-  
-  // Clear the buffer.
-  display.clearDisplay();
 
   // text display tests
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,0);  
+
+  // Clear the buffer.
+  display.clearDisplay();
   
   // Initialize touch sensor
   cs.set_CS_AutocaL_Millis(0xFFFFFFFF);     // turn off autocalibrate on channel 1 - TOUCH SENSOR
 
   // Initialize temp & humidity sensor
   dht.begin();    
+
+  // Print logs
+  if (VERBOSITY) Serial.println("Display & sensors ok.");
+
 }
 
 
@@ -128,14 +147,7 @@ void loop() {
 
   // Manage Thinger.io updates
   thing.handle();
-
-  display.clearDisplay();  
-
-  // If awake, update display
-  if (isAwake()) {
-    updateDisplay();
-  }
-
+  
   // Print logs
   if (VERBOSITY) Serial.println("Measure done!");
 
@@ -147,14 +159,20 @@ void loop() {
  * 
  */
 
-bool isAwake() {
+bool get_status() {
 
-  if (VERBOSITY) Serial.println("  -> Checking TOUCH SENSOR level");
+  if (VERBOSITY) Serial.print("  -> Checking STATUS ( ACTIVE / INACTIVE ) by measurint TOUCH SENSOR level: ");
 
   // Updating touching status & timings
-  if ( cs.capacitiveSensor(30) > TOUCH_LEVEL) return true;
-  else return false;
-
+  if ( cs.capacitiveSensor(30) > TOUCH_LEVEL) {
+    if (VERBOSITY) Serial.println("ACTIVE");
+    return true;
+  }
+    
+  else {
+    if (VERBOSITY) Serial.println("INACTIVE");
+    return false;
+  }
 }
 
 /*
@@ -163,10 +181,12 @@ bool isAwake() {
  * 
  */
 
-float updateDisplay() {
+float update_display() {
 
       if (VERBOSITY) Serial.println("  -> Printing on OLED Display");
 
+      // Clear Screen
+      display.clearDisplay();
       // Reset Position
       display.setCursor(0,0);
 
