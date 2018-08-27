@@ -54,17 +54,17 @@
 
 // THINGER.IO -----------> USER, PWD & DEVICE CREDENTIALS, TOKEN, ETC.
 #define USERNAME "KikeRamirez"
-#define DEVICE_ID "Prototype_001"
-#define DEVICE_CREDENTIAL "LlypDOJX2uqc"
+#define DEVICE_ID "P001"
+#define DEVICE_CREDENTIAL "ewJJF2ZFeHp1"
 
 // GENERAL PARAMETERS -----------> TIMINGS, FLAGS, DATA, ETC.
 #define TIMER_MEASURE 1000.0
-#define TIMER_SLEEP 5000.0
-#define VERBOSITY 1
+#define TIMER_DISPLAY 5000.0
+#define VERBOSITY 0
 
 // GLOBAL VARIABLES -----------> TIMINGS, FLAGS, DATA, ETC.
 float temperature, humidity;
-float timeMeasure, timeSleep;
+float timeDisplay, timeSleep;
 
 // INITIALIZE OBJECTS FOR -----------> NODE IOT, DISPLAY, TOUCH SENSOR, TEMP&HUMID SENSOR.
 Adafruit_SSD1306 display(OLED_RESET);
@@ -85,7 +85,10 @@ void setup()   {
     Serial.begin(9600);
     Serial.println("Starting...");
   }
-  
+
+  // Initialize OLED display
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
+
   // Initialize IOT Node and connect to WIFI
   thing.add_wifi(SSID, SSID_PASSWORD);
   
@@ -98,18 +101,6 @@ void setup()   {
   thing["humidity"] >> [](pson& out){
         out = dht.readHumidity();
   };  
-
-  thing["status"] = [](){
-    get_status();
-  };
-
-  thing["updateDisplay"] = [](){
-    update_display();
-  };
-
-  thing["clearDisplay"] = [](){
-    display.clearDisplay();
-  };
 
   // Print logs
   if (VERBOSITY) Serial.println("Connected to Thinger.io!");
@@ -124,12 +115,18 @@ void setup()   {
 
   // Clear the buffer.
   display.clearDisplay();
+
+  // Clear display
+  display.display();
   
   // Initialize touch sensor
   cs.set_CS_AutocaL_Millis(0xFFFFFFFF);     // turn off autocalibrate on channel 1 - TOUCH SENSOR
 
   // Initialize temp & humidity sensor
   dht.begin();    
+
+  // Initialize timers
+  timeDisplay = millis() - TIMER_DISPLAY;
 
   // Print logs
   if (VERBOSITY) Serial.println("Display & sensors ok.");
@@ -145,6 +142,13 @@ void setup()   {
 
 void loop() {
 
+  // Update display image
+  if (get_status()) update_display();
+  else {
+    display.clearDisplay();
+    display.display();
+  }
+  
   // Manage Thinger.io updates
   thing.handle();
   
@@ -165,8 +169,14 @@ bool get_status() {
 
   // Updating touching status & timings
   if ( cs.capacitiveSensor(30) > TOUCH_LEVEL) {
+    timeDisplay = millis();
     if (VERBOSITY) Serial.println("ACTIVE");
     return true;
+  }
+
+  else if (millis() - timeDisplay < TIMER_DISPLAY) {
+    if (VERBOSITY) Serial.println("ACTIVE");
+    return true;  
   }
     
   else {
@@ -183,24 +193,23 @@ bool get_status() {
 
 float update_display() {
 
-      if (VERBOSITY) Serial.println("  -> Printing on OLED Display");
-
-      // Clear Screen
-      display.clearDisplay();
-      // Reset Position
-      display.setCursor(0,0);
-
-      // Print temperature
-      display.print("T: ");
-      display.print(dht.readTemperature());
-      display.println(" C");
-
-      // Print humidity
-      display.print("H: ");
-      display.print(dht.readHumidity());
-      display.println("%");
-
-      // Send to OLED
-      display.display();
-
+  if (VERBOSITY) Serial.println("  -> Printing on OLED Display");
+  
+    // Clear Screen
+    display.clearDisplay();
+    // Reset Position
+    display.setCursor(0,0);
+  
+    // Print temperature
+    display.print("T: ");
+    display.print(dht.readTemperature());
+    display.println(" C");
+  
+    // Print humidity
+    display.print("H: ");
+    display.print(dht.readHumidity());
+    display.println("%");
+  
+    // Send to OLED
+    display.display();
 }
