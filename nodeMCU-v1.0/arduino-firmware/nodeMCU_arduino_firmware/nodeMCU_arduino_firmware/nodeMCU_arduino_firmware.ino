@@ -54,8 +54,8 @@
 #define DRY_LEVEL         770.0
 
 // WIFI ACCESS PARAMETERS -----------> SSID & PASSWORD FOR WIFI ACCESS (NOT 5G)
-#define SSID "Enrique Ramirez Lopez"
-#define SSID_PASSWORD "12345679"
+#define SSID "CarmenLauraKike"
+#define SSID_PASSWORD "Carmen2016"
 
 // THINGER.IO -----------> USER, PWD & DEVICE CREDENTIALS, TOKEN, ETC.
 #define USERNAME "KikeRamirez"
@@ -66,7 +66,7 @@
 #define TIMER_MEASURE 1000.0
 #define TIMER_TOUCH 200.0
 #define TIMER_DISPLAY 5000.0
-#define VERBOSITY 1
+#define VERBOSITY 0
 
 // GLOBAL VARIABLES -----------> TIMINGS, FLAGS, DATA, ETC.
 float temperature, humidity, moisture;
