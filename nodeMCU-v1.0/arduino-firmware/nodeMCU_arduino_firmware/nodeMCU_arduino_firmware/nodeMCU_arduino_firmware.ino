@@ -45,17 +45,17 @@
 
 #define CAP_TX            D8
 #define CAP_RX            D7
-#define TOUCH_LEVEL       200.0
+#define TOUCH_LEVEL       20.0
 
 #define OLED_RESET        LED_BUILTIN
 
 #define MOISTURE_PIN      A0
-#define WATER_LEVEL       520
-#define DRY_LEVEL         260
+#define WATER_LEVEL       440.0
+#define DRY_LEVEL         770.0
 
 // WIFI ACCESS PARAMETERS -----------> SSID & PASSWORD FOR WIFI ACCESS (NOT 5G)
-#define SSID "CarmenLauraKike"
-#define SSID_PASSWORD "Carmen2016"
+#define SSID "Enrique Ramirez Lopez"
+#define SSID_PASSWORD "12345679"
 
 // THINGER.IO -----------> USER, PWD & DEVICE CREDENTIALS, TOKEN, ETC.
 #define USERNAME "KikeRamirez"
@@ -178,6 +178,9 @@ void setup()   {
     Serial.println("Starting...");
   }
 
+  // Declare MOISTURE_PIN as an input
+  pinMode(MOISTURE_PIN, INPUT);
+
   // Initialize OLED display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
 
@@ -210,6 +213,7 @@ void setup()   {
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,0);  
+  display.setTextWrap(false);
 
   // Clear the buffer.
   display.clearDisplay();
@@ -278,12 +282,15 @@ void loop() {
     }
 
     // Read soil moisture and check it is valid
-    moisture = analogRead(MOISTURE_PIN); 
+    float moistureRaw = analogRead(MOISTURE_PIN); 
+
     while (isnan(moisture)) {
-      moisture = analogRead(A0);    
+      moistureRaw = analogRead(A0);    
     }
-    
-    if (VERBOSITY) Serial.println("Measure done: " + String(temperature) + "ºC - " + String(humidity) + "% + " + String(moisture) );
+
+    moisture = map(moistureRaw, WATER_LEVEL, DRY_LEVEL, 100.0, 0.0);
+
+    if (VERBOSITY) Serial.println("Measure done: " + String(temperature) + "ºC - " + String(humidity) + "% + " + String(moisture) + "%" );
 
     timeMeasure = millis();
   }
