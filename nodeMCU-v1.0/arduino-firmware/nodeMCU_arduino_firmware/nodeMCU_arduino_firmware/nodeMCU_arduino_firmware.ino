@@ -45,13 +45,17 @@
 
 #define CAP_TX            D8
 #define CAP_RX            D7
-#define TOUCH_LEVEL       120.0
+#define TOUCH_LEVEL       200.0
 
 #define OLED_RESET        LED_BUILTIN
 
+#define MOISTURE_PIN      A0
+#define WATER_LEVEL       520
+#define DRY_LEVEL         260
+
 // WIFI ACCESS PARAMETERS -----------> SSID & PASSWORD FOR WIFI ACCESS (NOT 5G)
-#define SSID "Enrique Ramirez Lopez"
-#define SSID_PASSWORD "12345679"
+#define SSID "CarmenLauraKike"
+#define SSID_PASSWORD "Carmen2016"
 
 // THINGER.IO -----------> USER, PWD & DEVICE CREDENTIALS, TOKEN, ETC.
 #define USERNAME "KikeRamirez"
@@ -65,14 +69,22 @@
 #define VERBOSITY 1
 
 // GLOBAL VARIABLES -----------> TIMINGS, FLAGS, DATA, ETC.
-float temperature, humidity;
+float temperature, humidity, moisture;
 float timeDisplay, timeMeasure, timeTouch;
+bool touchPressed;
+float offsetX;
 
 // Status for Device
 // 0 - Not connected to Internet
 // 1 - Connected, but on sleep mode
-// 2 - Normal mode
+// 2 - Normal mode - Temp
+// 3 - Normal mode - Humidity
+// 4 - Normal mode - Moisture
+// 5 - Normal mode - Time & Date
+
+
 int statusDevice;
+int lastStatusDevice;
 
 // INITIALIZE OBJECTS FOR -----------> NODE IOT, DISPLAY, TOUCH SENSOR, TEMP&HUMID SENSOR.
 Adafruit_SSD1306 display(OLED_RESET);
@@ -182,6 +194,11 @@ void setup()   {
         out = humidity;
   };  
 
+  // Declare output parameter "humidity"
+  thing["moisture"] >> [](pson& out){
+        out = moisture;
+  };  
+  
   // Print logs
   if (VERBOSITY) Serial.println("Connected to Thinger.io!");
   
@@ -198,7 +215,7 @@ void setup()   {
   display.clearDisplay();
 
   // Print welcome screen
-  display.println("Connecting...");
+  // display.println("Connecting...");
 
   // Clear display
   display.display();
@@ -215,8 +232,12 @@ void setup()   {
   timeTouch = millis() - TIMER_TOUCH;
   temperature = 0;
   humidity = 0;
+  moisture = 0;
+  
   statusDevice = 0;
-
+  lastStatusDevice = 0;
+  touchPressed = false;
+  offsetX = -128;
   // Print logs
   if (VERBOSITY) Serial.println("Display & sensors ok.");
 
@@ -232,10 +253,10 @@ void setup()   {
 void loop() {
 
   float currentTime = millis();
-
  
   if (currentTime - timeTouch > TIMER_TOUCH) {
-    statusDevice = get_status();
+    
+    check_status();
 
     if (VERBOSITY) Serial.println("Device Status: " + statusDevice );
 
@@ -243,47 +264,35 @@ void loop() {
   }
 
   if (currentTime - timeMeasure > TIMER_MEASURE) {
+
+    // Read temperature and check it is valid
     temperature = dht.readTemperature();
     while (isnan(temperature)) {
       temperature = dht.readTemperature();    
     }
+
+    // Read air relative humidity and check it is valid
     humidity = dht.readHumidity();
     while (isnan(humidity)) {
       humidity = dht.readHumidity();    
     }
-    if (VERBOSITY) Serial.println("Measure done: " + String(temperature) + "ºC - " + String(humidity) + "%" );
+
+    // Read soil moisture and check it is valid
+    moisture = analogRead(MOISTURE_PIN); 
+    while (isnan(moisture)) {
+      moisture = analogRead(A0);    
+    }
+    
+    if (VERBOSITY) Serial.println("Measure done: " + String(temperature) + "ºC - " + String(humidity) + "% + " + String(moisture) );
 
     timeMeasure = millis();
   }
   
-  // Update display image
-  if (statusDevice == 2) update_display();
-  
-  else if (statusDevice == 0) {
-    // Clear Screen
-    display.clearDisplay();
-    // Reset Position
-    display.setCursor(0,0);
-    display.setTextSize(2);
-
-    display.drawBitmap(0, 0, wifi_logo, 128, 32, WHITE);
-    // display.invertDisplay(true);
-  
-    // Print temperature
-    // display.println("Connecting");
-    // display.println("WIFI...");
-  
-    // Send to OLED
-    display.display();
-
-  }
-  
-  else {
-    display.clearDisplay();
-    display.display();
-  }
   // Manage Thinger.io updates
   thing.handle();
+
+  // Update image in OLED Display
+  update_display();
 
   // Print logs
   if (VERBOSITY) Serial.println("Loop done!");
@@ -296,9 +305,11 @@ void loop() {
  * 
  */
 
-int get_status() {
+void check_status() {
 
   float capMeasure = cs.capacitiveSensor(30);
+
+  lastStatusDevice = statusDevice;
   
   if (VERBOSITY) {
     Serial.print("  -> Checking STATUS ( ACTIVE / INACTIVE ) by measurint TOUCH SENSOR level: ");
@@ -307,24 +318,34 @@ int get_status() {
 
   if( WiFi.status() != WL_CONNECTED) {
       Serial.println("Not connected to Internet!!");
-      return 0;
+      statusDevice = 0;
   }
   
   // Updating touching status & timings
-  if ( cs.capacitiveSensor(30) > TOUCH_LEVEL) {
+  if (( cs.capacitiveSensor(30) > TOUCH_LEVEL) && (millis() - timeDisplay < TIMER_DISPLAY)) {
+    timeDisplay = millis();
+    touchPressed = true;
+  }
+
+  else if ( cs.capacitiveSensor(30) > TOUCH_LEVEL) {
     timeDisplay = millis();
     if (VERBOSITY) Serial.println(" - ACTIVE");
-    return 2;
+    statusDevice = 2;
   }
+
 
   else if (millis() - timeDisplay < TIMER_DISPLAY) {
     if (VERBOSITY) Serial.println(" - ACTIVE");
-    return 2;  
+    if (touchPressed) {
+      touchPressed = false;
+      statusDevice += 1;
+      if (statusDevice > 5) statusDevice = 1;
+    }
   }
     
   else {
     if (VERBOSITY) Serial.println(" - INACTIVE");
-    return 1;
+    statusDevice = 1;
   }
 }
 
@@ -338,23 +359,76 @@ float update_display() {
 
   if (VERBOSITY) Serial.println("  -> Printing on OLED Display");
 
-    // display.invertDisplay(false);
+  if (statusDevice == 0) {
 
     // Clear Screen
     display.clearDisplay();
     // Reset Position
     display.setCursor(0,0);
-  
-    // Print temperature
-    display.print("T: ");
-    display.print(temperature);
-    display.println(" C");
-  
-    // Print humidity
-    display.print("H: ");
-    display.print(humidity);
-    display.println("%");
+    display.setTextSize(2);
+
+    display.drawBitmap(0, 0, wifi_logo, 128, 32, WHITE);
   
     // Send to OLED
     display.display();
+    
+  }
+
+  if (statusDevice == 1) {
+
+    // Clear Screen
+    display.clearDisplay();
+ 
+    // Send to OLED
+    display.display();
+  }
+  
+  if (statusDevice > 1) {
+
+    // Clear Screen
+    display.clearDisplay();
+    // Reset Position
+    display.setCursor(0 + offsetX,0);
+  
+    // Print temperature
+    display.setTextSize(1);
+    display.println("Temperature: ");
+    display.setTextSize(2);
+    display.print(temperature);
+    display.println(" C");
+
+    // Reset Position
+    display.setCursor(128 + offsetX,0);
+  
+    // Print humidity
+    display.setTextSize(1);
+    display.println("Humidity: ");
+    display.setTextSize(2);
+    display.print(humidity);
+    display.println(" %");
+    
+    // Reset Position
+    display.setCursor(256 + offsetX,0);
+  
+    // Print moisture
+    display.setTextSize(1);
+    display.println("Moisture: ");
+    display.setTextSize(2);
+    display.print(moisture);
+    display.println(" %");    
+    
+    // Reset Position
+    display.setCursor(384 + offsetX,0);
+  
+    // Print date & time
+    display.setTextSize(1);
+    display.println("26.8.2018");
+    display.setTextSize(2);
+    display.println("00:32:15");
+        
+    // Send to OLED
+    display.display();
+  
+  }
+
 }
