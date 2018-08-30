@@ -15,7 +15,7 @@ IFLabel original_width_label, original_height_label;
 IFTextField sprite_width, sprite_height, num_frames;
 IFLabel sprite_width_label, sprite_height_label, num_frames_label;
 
-IFButton generate_button, exit_button;
+IFButton generate_button, exit_button, load_button, save_button;
 IFProgressBar generate_bar;
 IFRadioController adjust_controller;
 IFRadioButton h_button, v_button;
@@ -28,6 +28,40 @@ int deltaX, deltaY;
 boolean converting;
 int index_frame;
 String video_url;
+
+void load_video(File selection) {
+  
+  if (selection == null) {
+    video_url = "";
+  } else {
+    video_url = selection.getPath();
+    println(video_url);
+  }
+  
+  video_url = video_url.toLowerCase();
+  
+  while ((!video_url.endsWith("mp4") && !video_url.endsWith("gif") && !video_url.endsWith("mov") && !video_url.endsWith("mpg")) || video_url.length() <= 0) {
+    
+    println("Please, select a video"); 
+    delay(1000);
+  
+  }
+  
+  movie = new Movie(this, video_url);
+  movie.play();
+  
+  while (!movie.available()) {
+  }
+  
+  movie.read();
+  movie.pause();
+  
+  index_frame = 0;
+  
+  converting = false;
+  movie.stop();  
+  
+}
 
 void fileSelected(File selection) {
   if (selection == null) {
@@ -48,20 +82,14 @@ void setup() {
   deltaX = int(width * 0.05);
   deltaY = int(height * 0.04);
   
-  video_url = "";
+  video_url = "bees&bombs_000.mp4";
   
-  selectInput("Select a file to process:", "fileSelected");
-
-  // Load Video
-  movie = new Movie(this, video_url);
-  movie.play();
-  while (!movie.available()) {
-  }
-  movie.read();
-  movie.pause();
-  index_frame = 0;
+  movie = null;
+  File selected = new File(video_url);
+  load_video(selected);
   
-  converting = false;
+  
+  while (movie == null) delay(500);
   
   // Set GUI
   c = new GUIController(this);
@@ -93,6 +121,14 @@ void setup() {
   h_button = new IFRadioButton("h", deltaX, int(16 * deltaY), adjust_controller);
   v_button = new IFRadioButton("v", 2 * deltaX, int(16 * deltaY), adjust_controller);
   
+  load_button = new IFButton("Load Video", int(17 * deltaX), int(18 * deltaY));
+  load_button.setHeight(int(2 * deltaY));
+  load_button.addActionListener(this);
+  
+  save_button = new IFButton("Save Sprite", int(17 * deltaX), int(20 * deltaY));
+  save_button.setHeight(int(2 * deltaY));
+  save_button.addActionListener(this);
+  
   generate_button = new IFButton("CONVERT", int(deltaX), int(22 * deltaY));
   generate_button.setHeight(int(2 * deltaY));
   generate_button.addActionListener(this);
@@ -104,6 +140,8 @@ void setup() {
   exit_button = new IFButton("EXIT", int(17 * deltaX), int(22 * deltaY));
   exit_button.setHeight(int(2 * deltaY));
   exit_button.addActionListener(this);
+  
+
   
   // Add components to GUI
   c.add(original_width);
@@ -119,15 +157,16 @@ void setup() {
   c.add(adjust_controller);
   c.add(h_button);
   c.add(v_button);
+  c.add(load_button);
+  c.add(save_button);
   c.add(generate_button);
   c.add(generate_bar);
   c.add(exit_button);
   
   sprite = createImage(int(sprite_width.getValue()), int(num_frames.getValue()) * int(sprite_height.getValue()), RGB);
   
-  movie.stop();
-
 }
+
 
 void movieEvent(Movie m) {
   m.read();
@@ -176,7 +215,6 @@ void draw() {
     if (movie.time() >= movie.duration()) {
       movie.stop();
       generate_bar.setProgress(0);
-      sprite.save("sprite_output.bmp");
       converting = false;
     }
     
@@ -215,5 +253,12 @@ void actionPerformed (GUIEvent e) {
   }
   else if (e.getSource() == exit_button) {
     exit();
+  }  
+  else if (e.getSource() == load_button) {
+    selectInput("Select a VIDEO file to process:", "load_video");
+  }  
+  else if (e.getSource() == save_button) {
+    sprite.save("sprite_output.bmp");
+
   }  
 }
