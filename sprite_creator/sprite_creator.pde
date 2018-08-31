@@ -1,9 +1,23 @@
-/**
- * Loop. 
- * 
- * Shows how to load and play a QuickTime movie file.  
- *
- */
+/*
+    MIT License
+    Copyright (c) 2018, Enrique Ramírez
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THEM
+    SOFTWARE.
+*/
+
 
 import processing.video.*;
 import interfascia.*;
@@ -24,6 +38,7 @@ IFRadioButton h_button, v_button;
 
 Movie movie;
 PImage frame, sprite;
+PGraphics canvas;
 int deltaX, deltaY;
 boolean converting;
 int index_frame;
@@ -79,17 +94,31 @@ void setup() {
   background(150);
   
   // Calculate deltas for GUI Positioning
-  deltaX = int(width * 0.05);
-  deltaY = int(height * 0.04);
+  deltaX = int(width / 20.0);
+  deltaY = int(height / 25.0);
   
   video_url = "bees&bombs_000.mp4";
   
   movie = null;
   File selected = new File(video_url);
   load_video(selected);
-  
-  
+
   while (movie == null) delay(500);
+
+  // Create canvas
+  int canvasWidth = 10 * deltaX;
+  int canvasHeight = int((9.0 / 16.0) * canvasWidth);
+  
+  canvas = createGraphics( canvasWidth, canvasHeight);
+  canvas.beginDraw();
+  canvas.background(0);
+  canvas.fill(255);
+  canvas.textSize(112);
+  canvas.textAlign(CENTER, CENTER);
+  PFont mono_sans = createFont("SpaceMono-Regular.ttf", 64, true);
+  canvas.textFont(mono_sans);
+  canvas.text("mama", canvas.width, canvas.height);
+  canvas.endDraw();
   
   // Set GUI
   c = new GUIController(this);
@@ -189,7 +218,9 @@ void draw() {
 
   background(150);
 
-  image(movie, 4 * deltaX, deltaY);
+  image(canvas, 4 * deltaX, deltaY);
+  
+  //image(movie, 4 * deltaX, deltaY);
   
   
   stroke(255, 0, 0);
