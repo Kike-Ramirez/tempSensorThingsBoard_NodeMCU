@@ -1,0 +1,2 @@
+/usr/local/bin/thinger
+/etc/init.d/thinger
