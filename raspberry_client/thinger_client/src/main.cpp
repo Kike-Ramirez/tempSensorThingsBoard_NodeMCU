@@ -44,7 +44,8 @@ int main(void)
 
     wiringPiSetup();
 
-    pinMode (WATER_VALVE_PIN, OUTPUT) ;
+    pinMode (WATER_VALVE_PIN, OUTPUT);
+    digitalWrite(WATER_VALVE_PIN, LOW);
 
 
     // define thing resources here. i.e, this is a sum example

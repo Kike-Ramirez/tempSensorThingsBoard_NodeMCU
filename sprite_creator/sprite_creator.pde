@@ -113,10 +113,11 @@ void setup() {
   canvas.beginDraw();
   canvas.background(0);
   canvas.fill(255);
+  PFont mono_sans = loadFont("fonts/SpaceMono-Regular-32.vlw");
+  canvas.textFont(mono_sans, 32);
   canvas.textSize(112);
   canvas.textAlign(CENTER, CENTER);
-  PFont mono_sans = createFont("SpaceMono-Regular.ttf", 64, true);
-  canvas.textFont(mono_sans);
+
   canvas.text("mama", canvas.width, canvas.height);
   canvas.endDraw();
   
