@@ -112,13 +112,13 @@ void setup() {
   canvas = createGraphics( canvasWidth, canvasHeight);
   canvas.beginDraw();
   canvas.background(0);
+  canvas.image(movie, 0, 0, canvas.width, canvas.height);
   canvas.fill(255);
-  PFont mono_sans = loadFont("fonts/SpaceMono-Regular-32.vlw");
-  canvas.textFont(mono_sans, 32);
-  canvas.textSize(112);
+  PFont mono_sans = loadFont("fonts/SpaceMono-Regular-64.vlw");
+  canvas.textFont(mono_sans);
   canvas.textAlign(CENTER, CENTER);
 
-  canvas.text("mama", canvas.width, canvas.height);
+  canvas.text("mama", 0.5 * canvas.width, 0.5 * canvas.height);
   canvas.endDraw();
   
   // Set GUI
@@ -231,15 +231,15 @@ void draw() {
   int rect_width, rect_height;
   
   if (adjust_controller.getSelectedIndex() == 1) {
-    rect_height = movie.height;
-    rect_width = int(float(movie.width) * rect_height / float(sprite_height.getValue()));
+    rect_height = canvas.height;
+    rect_width = int(float(canvas.width) * rect_height / float(sprite_height.getValue()));
     rect(4 * deltaX, deltaY, rect_width, rect_height);  
   }
 
   else {
-    rect_width = movie.width;
-    rect_height = int(float(movie.height) * float(sprite_width.getValue()) / rect_width );
-    rect(4 * deltaX, deltaY + (movie.height - rect_height) * 0.5, rect_width, rect_height);  
+    rect_width = canvas.width;
+    rect_height = int(float(canvas.height) * float(sprite_width.getValue()) / rect_width );
+    rect(4 * deltaX, deltaY + (canvas.height - rect_height) * 0.5, rect_width, rect_height);  
   }
   
   if (converting) {
