@@ -63,18 +63,15 @@ void load_video(File selection) {
   }
   
   movie = new Movie(this, video_url);
-  movie.play();
   
-  while (!movie.available()) {
-  }
-  
-  movie.read();
-  movie.pause();
-  
+  // Pausing the video at the first frame. 
   index_frame = 0;
-  
+
+  movie.play();
+  movie.jump(index_frame);
+  movie.pause();
+ 
   converting = false;
-  movie.stop();  
   
 }
 
@@ -97,7 +94,7 @@ void setup() {
   deltaX = int(width / 20.0);
   deltaY = int(height / 25.0);
   
-  video_url = "bees&bombs_001.mp4";
+  video_url = "bees&bombs_007.mp4";
   
   movie = null;
   File selected = new File(video_url);
@@ -221,8 +218,7 @@ void draw() {
 
   image(canvas, 4 * deltaX, deltaY);
   
-  //image(movie, 4 * deltaX, deltaY);
-  
+  image(movie, 4 * deltaX, deltaY);
   
   stroke(255, 0, 0);
   noFill();
