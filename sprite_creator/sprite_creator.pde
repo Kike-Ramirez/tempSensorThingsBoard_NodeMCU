@@ -36,6 +36,7 @@ IFRadioButton h_button, v_button;
 
 
 
+Visor visor;
 Movie movie;
 PImage frame, sprite;
 PGraphics canvas;
@@ -73,6 +74,12 @@ void load_video(File selection) {
  
   converting = false;
   
+  PVector ovisor = new PVector(4 * deltaX, deltaY);
+      // Create canvas
+  PVector svisor = new PVector(10 * deltaX, int((9.0 / 16.0) * 10.0 * deltaX));
+  
+  visor = new Visor(canvas, movie, ovisor, svisor); 
+  
 }
 
 void fileSelected(File selection) {
@@ -86,6 +93,7 @@ void fileSelected(File selection) {
 
 void setup() {
   
+  
   size(1024, 768);
   
   background(150);
@@ -93,23 +101,15 @@ void setup() {
   // Calculate deltas for GUI Positioning
   deltaX = int(width / 20.0);
   deltaY = int(height / 25.0);
-  
-  video_url = "bees&bombs_007.mp4";
-  
-  movie = null;
-  File selected = new File(video_url);
-  load_video(selected);
 
-  while (movie == null) delay(500);
-
-  // Create canvas
+    // Create canvas
   int canvasWidth = 10 * deltaX;
   int canvasHeight = int((9.0 / 16.0) * canvasWidth);
   
   canvas = createGraphics( canvasWidth, canvasHeight);
   canvas.beginDraw();
   canvas.background(0);
-  canvas.image(movie, 0, 0, canvas.width, canvas.height);
+  //canvas.image(movie, 0, 0, canvas.width, canvas.height);
   canvas.fill(255);
   PFont mono_sans = loadFont("fonts/SpaceMono-Regular-64.vlw");
   canvas.textFont(mono_sans);
@@ -117,6 +117,14 @@ void setup() {
 
   canvas.text("mama", 0.5 * canvas.width, 0.5 * canvas.height);
   canvas.endDraw();
+
+  video_url = "bees&bombs_007.mp4";
+  
+  movie = null;
+  File selected = new File(video_url);
+  load_video(selected);
+
+  while (movie == null) delay(500);
   
   // Set GUI
   c = new GUIController(this);
